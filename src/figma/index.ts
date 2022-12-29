@@ -9,6 +9,7 @@ const actions: Record<string, Record<string, FigmaMessageHandler>> = {
 }
 
 figma.ui.onmessage = async ({ id, type, payload = {} }: FigmaMessageParams) => {
+  console.log('shuchu', window)
   // type 是 x.y 形式的，x 是引入的文件，如 storage，而 y 是其内的方法，如 get 等。示例: storage.get
   if (type && typeof type !== 'string') {
     console.error('不合法的figma message type!')
