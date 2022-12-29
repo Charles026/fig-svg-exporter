@@ -1,0 +1,8 @@
+{
+  "name": "KD-Icon-Exporter",
+  "id": "10291578887272254322",
+  "api": "1.0.0",
+  "editorType": ["figma"],
+  "main": "dist/code.js",
+  "ui": "dist/ui.html"
+}
