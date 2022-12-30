@@ -7,7 +7,7 @@ export const loadIcon = () => {
     for (let i = 0; i < figma.currentPage.selection.length; i++) {
       const node = figma.currentPage.selection[i]
       if (node.type === 'COMPONENT' || node.type === 'INSTANCE') {
-        // console.log(node);
+        console.log(node)
         ;(async () => {
           svgData = await node.exportAsync({ format: 'SVG' })
           figma.ui.postMessage({ type: 'icon-data', svgData })
