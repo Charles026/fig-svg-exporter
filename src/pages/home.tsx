@@ -6,7 +6,6 @@ const Home = () => {
   const history = useHistory()
 
   const loadIcon = () => {
-    // console.log('shuchu',window)
     history.push('/result')
     parent.postMessage({ pluginMessage: { type: 'page.loadIcon' } }, '*')
   }

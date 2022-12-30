@@ -19,25 +19,6 @@ const Result = () => {
     }
     svgCodeArr.push(svgCode)
     console.log(svgCodeArr)
-    //     let svgCodePass = [];
-    //     setTimeout(() => {
-    //        svgCodePass = svgCodeArr;
-
-    //     function downloadFile(needDownloadList) {
-    //     const zip = new JSZip();
-    //     const downloadData = zip.folder('icon');
-    //     for (let i = 0 ; i < needDownloadList.length; i++) {
-    //       const data = needDownloadList[i];
-    //       const blob = new Blob([data], { type: "image/svg+xml" }); // 参考前面的单文件下载
-    //         downloadData.file(`${[i]}.svg`, blob) // 往文件家里面添加文件
-    //     }
-    //     zip.generateAsync({type:"blob"}).then(function(content) {
-    //     // 保存文件
-    //     FileSaver(content, "images");
-    //   });
-    // };
-    // downloadFile(svgCodePass);
-    // },100)
   }
 
   return (

@@ -9,7 +9,10 @@ export const loadIcon = () => {
       if (node.type === 'COMPONENT' || node.type === 'INSTANCE') {
         console.log(node)
         ;(async () => {
-          svgData = await node.exportAsync({ format: 'SVG' })
+          svgData = await node.exportAsync({
+            format: 'SVG',
+            svgIdAttribute: true,
+          })
           figma.ui.postMessage({ type: 'icon-data', svgData })
         })()
       } else {
