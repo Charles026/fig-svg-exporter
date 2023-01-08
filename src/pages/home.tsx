@@ -6,8 +6,9 @@ const Home = () => {
   const history = useHistory()
 
   const loadIcon = () => {
-    history.push('/result')
-    parent.postMessage({ pluginMessage: { type: 'page.loadIcon' } }, '*')
+    console.log('click to load')
+    history.push('./result')
+    parent.postMessage({ pluginMessage: { type: 'storage.loadIcon' } }, '*')
   }
 
   return (

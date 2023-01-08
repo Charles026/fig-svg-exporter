@@ -5,6 +5,6 @@
 import './figma/index'
 figma.showUI(__html__, {
   title: 'KD Figma Plugin',
-  width: 360,
-  height: 480,
+  width: 480,
+  height: 640,
 })

@@ -7,7 +7,7 @@ import '../ui.css'
 
 export default hot(function App() {
   return (
-    <div style={{ padding: '8px' }}>
+    <div>
       <Router>
         <Switch>
           <Route path="/" exact>
