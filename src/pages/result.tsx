@@ -34,12 +34,31 @@ const Result = () => {
     const error = document.getElementById('error')
     const iconArr = []
     let icon: string
+    let formatSvg: string
+    // const strokeString = /stroke="[^"]+"/g;
+    // const fillString = /fill="[^"]+"/g;
+
     const viewSize = `width="16" height="16" viewBox="0 0 16 16"`
+
     if (msg.type === 'load-icon') {
       for (let i = 0; i < iconNameArr.length; i++) {
         const svg = new TextDecoder().decode(svgDataArr[i])
+        const parser = new DOMParser()
+        const svgDOM = parser.parseFromString(svg, 'image/svg+xml')
+        const hexCode = svgDOM
+          .getElementById(`group-${[i]}`)
+          .firstElementChild.getAttribute('stroke')
+        console.log(hexCode)
 
-        // console.log(svg);
+        formatSvg = svg.replace(`<g id="${iconNameArr[i]}">`, '')
+
+        formatSvg = formatSvg.replace(`</g>\n</svg>`, `</svg>`)
+
+        // formatSvg = formatSvg.replace(strokeString,`fill="none"`);
+
+        // formatSvg = formatSvg.replace(fillString, `stroke="none"`);
+
+        console.log(formatSvg)
 
         if (nodeTypeArr[i] !== 'COMPONENT') {
           const error = `<span class='error-info'>获取图层类型错误${nodeTypeArr[i]}</span>`
