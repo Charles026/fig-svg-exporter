@@ -34,7 +34,7 @@ const Result = () => {
     const error = document.getElementById('error')
     const iconArr = []
     let icon: string
-    let formatSvg: string
+    // let formatSvg: string
     // const strokeString = /stroke="[^"]+"/g;
     // const fillString = /fill="[^"]+"/g;
 
@@ -45,20 +45,44 @@ const Result = () => {
         const svg = new TextDecoder().decode(svgDataArr[i])
         const parser = new DOMParser()
         const svgDOM = parser.parseFromString(svg, 'image/svg+xml')
-        const hexCode = svgDOM
-          .getElementById(`group-${[i]}`)
-          .firstElementChild.getAttribute('stroke')
-        console.log(hexCode)
+        const groupCount = svgDOM.getElementById(
+          `${iconNameArr[i]}`,
+        ).childElementCount
+        for (let j = 0; j < groupCount; j++) {
+          const hexCode = svgDOM
+            .getElementById(`group-${[j]}`)
+            .firstElementChild.getAttribute('stroke')
+          console.log(hexCode)
+          svgDOM.getElementById(`group-${[j]}`).setAttribute('stroke', hexCode)
+          svgDOM.getElementById(`group-${[j]}`).setAttribute('fill', hexCode)
+        }
+        const pathCount = Array.from(svgDOM.getElementsByTagName('path')).length
+        for (let i = 0; i < pathCount; i++) {
+          const pathDOM = Array.from(svgDOM.getElementsByTagName('path'))[i]
+          if (pathDOM.getAttribute('stroke') !== null) {
+            pathDOM.setAttribute('fill', 'none')
+            pathDOM.removeAttribute('stroke')
+          }
+          if (
+            pathDOM.getAttribute('fill') !== null &&
+            pathDOM.getAttribute('fill') !== 'none'
+          ) {
+            pathDOM.setAttribute('stroke', 'none')
+            pathDOM.removeAttribute('fill')
+          }
+          console.log(pathDOM)
+        }
+        console.log(svgDOM)
 
-        formatSvg = svg.replace(`<g id="${iconNameArr[i]}">`, '')
+        // formatSvg = svg.replace(/<g id="\${iconNameArr\[i\]}">^.*$<\/g><\/svg>/g, )
 
-        formatSvg = formatSvg.replace(`</g>\n</svg>`, `</svg>`)
+        // formatSvg = formatSvg.replace(`</g>\n</svg>`, `</svg>`)
 
         // formatSvg = formatSvg.replace(strokeString,`fill="none"`);
 
         // formatSvg = formatSvg.replace(fillString, `stroke="none"`);
 
-        console.log(formatSvg)
+        // console.log(formatSvg)
 
         if (nodeTypeArr[i] !== 'COMPONENT') {
           const error = `<span class='error-info'>获取图层类型错误${nodeTypeArr[i]}</span>`
