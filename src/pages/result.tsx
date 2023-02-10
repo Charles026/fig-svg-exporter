@@ -43,25 +43,53 @@ const Result = () => {
     if (msg.type === 'load-icon') {
       for (let i = 0; i < iconNameArr.length; i++) {
         const svg = new TextDecoder().decode(svgDataArr[i])
+
+        // 将svg转为DOM
         const parser = new DOMParser()
         const svgDOM = parser.parseFromString(svg, 'image/svg+xml')
         const groupCount = svgDOM.getElementById(
           `${iconNameArr[i]}`,
         ).childElementCount
+
+        const defs = svgDOM.getElementsByTagName('defs')[0]
+
+        if (defs) {
+          defs.parentNode.removeChild(defs)
+        }
+
+        // 设置group内的fill和stroke
         for (let j = 0; j < groupCount; j++) {
-          const hexCode = svgDOM
+          let hexCode = svgDOM
             .getElementById(`group-${[j]}`)
             .firstElementChild.getAttribute('stroke')
-          console.log(hexCode)
+          if (hexCode !== null) {
+            // console.log(hexCode)
+          } else if (hexCode === null) {
+            hexCode = svgDOM
+              .getElementById(`group-${[j]}`)
+              .firstElementChild.getAttribute('fill')
+          }
           svgDOM.getElementById(`group-${[j]}`).setAttribute('stroke', hexCode)
           svgDOM.getElementById(`group-${[j]}`).setAttribute('fill', hexCode)
         }
+
+        // 将stroke-width提取到svg内
+
+        // 格式化 path
         const pathCount = Array.from(svgDOM.getElementsByTagName('path')).length
         for (let i = 0; i < pathCount; i++) {
           const pathDOM = Array.from(svgDOM.getElementsByTagName('path'))[i]
+          pathDOM.removeAttribute('id')
           if (pathDOM.getAttribute('stroke') !== null) {
             pathDOM.setAttribute('fill', 'none')
             pathDOM.removeAttribute('stroke')
+            pathDOM.setAttribute('vector-effect', 'none-scaling-stroke')
+            const strokeWidth = pathDOM.getAttribute('stroke-width')
+            console.log(strokeWidth)
+            svgDOM
+              .getElementsByTagName('svg')[0]
+              .setAttribute('stroke-width', strokeWidth)
+            pathDOM.removeAttribute('stroke-width')
           }
           if (
             pathDOM.getAttribute('fill') !== null &&
@@ -70,14 +98,13 @@ const Result = () => {
             pathDOM.setAttribute('stroke', 'none')
             pathDOM.removeAttribute('fill')
           }
-          console.log(pathDOM)
+          // console.log(pathDOM)
         }
         console.log(svgDOM)
 
         // formatSvg = svg.replace(/<g id="\${iconNameArr\[i\]}">^.*$<\/g><\/svg>/g, )
 
         // formatSvg = formatSvg.replace(`</g>\n</svg>`, `</svg>`)
-
         // formatSvg = formatSvg.replace(strokeString,`fill="none"`);
 
         // formatSvg = formatSvg.replace(fillString, `stroke="none"`);
