@@ -16,7 +16,9 @@ const Result = () => {
   //   parent.postMessage({ pluginMessage: {type:'storage.download'}}, '*')
   // }
 
-  // let svgDataArr = [];
+  const svgStringArr = []
+
+  let svgString: string
   // let iconNameArr = [];
 
   // const segment = document.getElementById('segment-control');
@@ -34,6 +36,7 @@ const Result = () => {
     const error = document.getElementById('error')
     const iconArr = []
     let icon: string
+    // const svgDesc = document.createElement("desc");
     // let formatSvg: string
     // const strokeString = /stroke="[^"]+"/g;
     // const fillString = /fill="[^"]+"/g;
@@ -50,18 +53,33 @@ const Result = () => {
         const groupCount = svgDOM.getElementById(
           `${iconNameArr[i]}`,
         ).childElementCount
-
+        // svgDOM.appendChild(svgDesc)
         const defs = svgDOM.getElementsByTagName('defs')[0]
 
         if (defs) {
           defs.parentNode.removeChild(defs)
         }
 
+        // 获取 SVG 中 stroke-width 属性的值
+
+        const strokeWidthElement = svgDOM.querySelector('[stroke-width]')
+
+        if (strokeWidthElement !== null) {
+          const strokeWidth = strokeWidthElement.getAttribute('stroke-width')
+          // 将 stroke-width 属性的值设置为 SVG 元素的属性之一
+          svgDOM.querySelector('svg').setAttribute('stroke-width', strokeWidth)
+        } else {
+          svgDOM.querySelector('svg').setAttribute('stroke-width', '1')
+        }
+
         // 设置group内的fill和stroke
         for (let j = 0; j < groupCount; j++) {
+          const svgGroup = svgDOM.getElementById(`group-${[j]}`)
+          // 获取group那第一个元素的stroke
           let hexCode = svgDOM
             .getElementById(`group-${[j]}`)
             .firstElementChild.getAttribute('stroke')
+
           if (hexCode !== null) {
             // console.log(hexCode)
           } else if (hexCode === null) {
@@ -69,38 +87,52 @@ const Result = () => {
               .getElementById(`group-${[j]}`)
               .firstElementChild.getAttribute('fill')
           }
-          svgDOM.getElementById(`group-${[j]}`).setAttribute('stroke', hexCode)
-          svgDOM.getElementById(`group-${[j]}`).setAttribute('fill', hexCode)
+          svgGroup.setAttribute('stroke', hexCode)
+          svgGroup.setAttribute('fill', hexCode)
+
+          // 设置group那的图形stroke和fill
+          const strokeAttr = svgGroup.querySelectorAll('[stroke]')
+          const fillAttr = svgGroup.querySelectorAll('[fill]')
+          // console.log(strokeAttr,fillAttr);
+
+          if (strokeAttr.length > 0) {
+            for (let i = 0; i < strokeAttr.length; i++) {
+              if (strokeAttr[i].getAttribute('stroke') !== null) {
+                strokeAttr[i].setAttribute('fill', 'none')
+                strokeAttr[i].setAttribute(
+                  'vector-effect',
+                  'non-scaling-stroke',
+                )
+                strokeAttr[i].removeAttribute('stroke')
+                strokeAttr[i].removeAttribute('stroke-width')
+                strokeAttr[i].removeAttribute('id')
+              }
+            }
+          }
+
+          if (fillAttr.length > 0) {
+            for (let i = 0; i < fillAttr.length; i++) {
+              if (fillAttr[i].getAttribute('fill') !== null) {
+                fillAttr[i].setAttribute('stroke', 'none')
+                fillAttr[i].removeAttribute('fill')
+                fillAttr[i].removeAttribute('id')
+              }
+            }
+          }
         }
 
-        // 将stroke-width提取到svg内
+        // // 使用正则表达式删除<g>元素
+        // const regex = new RegExp(`<g\\s+id="${iconNameArr[i]}"[^>]*>`, "gi");
+        // // const regex2 = /<\/g>([\s\S]+)<\/svg>/i
 
-        // 格式化 path
-        const pathCount = Array.from(svgDOM.getElementsByTagName('path')).length
-        for (let i = 0; i < pathCount; i++) {
-          const pathDOM = Array.from(svgDOM.getElementsByTagName('path'))[i]
-          pathDOM.removeAttribute('id')
-          if (pathDOM.getAttribute('stroke') !== null) {
-            pathDOM.setAttribute('fill', 'none')
-            pathDOM.removeAttribute('stroke')
-            pathDOM.setAttribute('vector-effect', 'none-scaling-stroke')
-            const strokeWidth = pathDOM.getAttribute('stroke-width')
-            console.log(strokeWidth)
-            svgDOM
-              .getElementsByTagName('svg')[0]
-              .setAttribute('stroke-width', strokeWidth)
-            pathDOM.removeAttribute('stroke-width')
-          }
-          if (
-            pathDOM.getAttribute('fill') !== null &&
-            pathDOM.getAttribute('fill') !== 'none'
-          ) {
-            pathDOM.setAttribute('stroke', 'none')
-            pathDOM.removeAttribute('fill')
-          }
-          // console.log(pathDOM)
-        }
-        console.log(svgDOM)
+        // svgString = new XMLSerializer().serializeToString(svgDOM);
+
+        // svgString= svgString.replace(regex,"");
+        // // svgString= svgString.replace(regex2,`</svg>`)
+
+        // console.log(svgString);
+
+        svgStringArr.push(svgString)
 
         // formatSvg = svg.replace(/<g id="\${iconNameArr\[i\]}">^.*$<\/g><\/svg>/g, )
 
@@ -169,6 +201,7 @@ const Result = () => {
 
         iconArr.push(icon)
       }
+      console.log(svgStringArr)
       iconList.innerHTML = iconArr.join('')
       count.innerHTML = `<div>已选择</div>\n<div class='badge'>${nodeIDArr.length}</div>`
 
@@ -238,11 +271,10 @@ const Result = () => {
       }
 
       await zip.generateAsync({ type: 'blob' }).then(function (content) {
-        console.log(content)
         FileSaver(content, 'icons')
       })
     }
-    downloadFile(svgArr, svgNameArr)
+    downloadFile(svgStringArr, svgNameArr)
   }
 
   const onError = () => {
