@@ -11,6 +11,19 @@
   padding: 8px 16px;
 }
 
+.title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 120px;
+}
+
+.load-btn {
+  display: block;
+  text-align: center;
+  margin-top: 16px;
+}
+
 .back-wrapper {
   margin-bottom: 16px;
 }

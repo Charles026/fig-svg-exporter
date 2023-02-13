@@ -38,11 +38,11 @@ export const loadIcon = () => {
       const iconDescArr = nodes.map((node) => node.description)
       for (const node of nodes) {
         svgDataArr.push(await getSvgData(node))
-        if (node.type !== 'COMPONENT') {
-          // console.log(node);
-          console.log(node.type)
-          figma.notify('类型错误,请选择组件或实例!')
-        }
+        // if (node.type !== 'COMPONENT') {
+        //   // console.log(node);
+        //   console.log(node.type)
+        //   figma.notify('选择图层类型错误,请选择Component!')
+        // }
       }
 
       figma.ui.postMessage({
