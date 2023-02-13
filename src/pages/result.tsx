@@ -30,18 +30,12 @@ const Result = () => {
     const nodeIDArr = msg.nodeIDArr
     const iconNameArr = msg.iconNameArr
     const iconDescArr = msg.iconDescArr
-    const nodeTypeArr = msg.nodeTypeArr
+    // const nodeTypeArr = msg.nodeTypeArr
     const iconList = document.getElementById('list-container')
     const count = document.getElementById('count')
     const error = document.getElementById('error')
-    const iconArr = []
-    let icon: string
-    // const svgDesc = document.createElement("desc");
-    // let formatSvg: string
-    // const strokeString = /stroke="[^"]+"/g;
-    // const fillString = /fill="[^"]+"/g;
-
-    const viewSize = `width="16" height="16" viewBox="0 0 16 16"`
+    // const iconArr = []
+    // const viewSize = `width="16" height="16" viewBox="0 0 16 16"`
 
     if (msg.type === 'load-icon') {
       for (let i = 0; i < iconNameArr.length; i++) {
@@ -53,11 +47,45 @@ const Result = () => {
         const groupCount = svgDOM.getElementById(
           `${iconNameArr[i]}`,
         ).childElementCount
-        // svgDOM.appendChild(svgDesc)
-        const defs = svgDOM.getElementsByTagName('defs')[0]
+
+        // 添加 desc描述
+        const svgDesc = svgDOM.createElementNS(
+          'http://www.w3.org/2000/svg',
+          'desc',
+        )
+        svgDesc.textContent = iconDescArr[i]
+        // console.log(svgDesc);
+
+        // 获取SVG元素
+        const svgElement = svgDOM.documentElement
+
+        // 检查SVG元素是否存在并正确引用
+        if (svgElement != null) {
+          // 获取SVG元素的第一个子元素，并将<desc>元素插入到它的前面
+          const firstChild = svgElement.firstChild
+          svgElement.insertBefore(svgDesc, firstChild)
+        } else {
+          console.log('未找到SVG元素')
+        }
+
+        // 去除根 g标签
+        const gToRemove = svgElement.querySelector(`#${iconNameArr[i]}`)
+
+        const gChildren = gToRemove.childNodes
+
+        for (let i = gChildren.length - 1; i >= 0; i--) {
+          svgElement.insertBefore(gChildren[i], gToRemove.nextSibling)
+        }
+
+        gToRemove.parentNode.removeChild(gToRemove)
+
+        // 去除defs
+        const defs = Array.from(svgDOM.getElementsByTagName('defs'))
 
         if (defs) {
-          defs.parentNode.removeChild(defs)
+          for (const def of defs) {
+            defs[0].parentNode.removeChild(def)
+          }
         }
 
         // 获取 SVG 中 stroke-width 属性的值
@@ -121,88 +149,128 @@ const Result = () => {
           }
         }
 
-        // // 使用正则表达式删除<g>元素
-        // const regex = new RegExp(`<g\\s+id="${iconNameArr[i]}"[^>]*>`, "gi");
-        // // const regex2 = /<\/g>([\s\S]+)<\/svg>/i
+        svgString = new XMLSerializer().serializeToString(svgDOM)
 
-        // svgString = new XMLSerializer().serializeToString(svgDOM);
+        svgString = svgString.replace(/>\s+</g, '><').trim()
 
-        // svgString= svgString.replace(regex,"");
-        // // svgString= svgString.replace(regex2,`</svg>`)
-
-        // console.log(svgString);
+        console.log(svgString)
 
         svgStringArr.push(svgString)
 
-        // formatSvg = svg.replace(/<g id="\${iconNameArr\[i\]}">^.*$<\/g><\/svg>/g, )
+        // if (nodeTypeArr[i] !== 'COMPONENT') {
+        //   const error = `<span class='error-info'>获取图层类型错误${nodeTypeArr[i]}</span>`
+        //   icon = `<div class='icon-list error-icon' id='${
+        //     nodeIDArr[i]
+        //   }' tabindex="${[
+        //     i,
+        //   ]}">\n<div class='icon-wrapper' >${svgString}</div>\n<div class='content-wrapper'><div class='icon-name'>${
+        //     iconNameArr[i]
+        //   }</div>\n<div id='icon-desc${i}' class='icon-desc'>${error}</div>\n</div>\n</div>`
+        // } else if (
+        //   nodeTypeArr[i] === 'COMPONENT' &&
+        //   iconDescArr[i] === '' &&
+        //   svg.match(viewSize) === null
+        // ) {
+        //   const error = `<span class='error-info'>图标尺寸不正确</span><span class='error-info'>缺失图标描述</span>`
+        //   icon = `<div class='icon-list error-icon' id='${
+        //     nodeIDArr[i]
+        //   }' tabindex="${[
+        //     i,
+        //   ]}">\n<div class='icon-wrapper'>${svgString}</div>\n<div class='content-wrapper'><div class='icon-name'>${
+        //     iconNameArr[i]
+        //   }</div>\n<div class='icon-desc'>${error}</div>\n</div>\n</div>`
+        // } else if (
+        //   nodeTypeArr[i] === 'COMPONENT' &&
+        //   svg.match(viewSize) === null
+        // ) {
+        //   icon = `<div class='icon-list error-icon' id='${
+        //     nodeIDArr[i]
+        //   }' tabindex="${[
+        //     i,
+        //   ]}">\n<div class='icon-wrapper'>${svgString}</div>\n<div class='content-wrapper'><div class='icon-name'>${
+        //     iconNameArr[i]
+        //   }</div>\n<div class='icon-desc'><span class='error-info'>图标尺寸不正确</span>${
+        //     iconDescArr[i]
+        //   }</div>\n</div>\n</div>`
+        // } else if (nodeTypeArr[i] === 'COMPONENT' && iconDescArr[i] === '') {
+        //   iconDescArr[i] = `<div class='error-info'>缺失图标描述</div>`
+        //   icon = `<div class='icon-list error-icon' id='${
+        //     nodeIDArr[i]
+        //   }' tabindex="${[
+        //     i,
+        //   ]}">\n<div class='icon-wrapper'>${svgString}</div>\n<div class='content-wrapper'><div class='icon-name'>${
+        //     iconNameArr[i]
+        //   }</div>\n<div class='icon-desc'><span class='error-info'>图标尺寸不正确</span>${
+        //     iconDescArr[i]
+        //   }</div>\n</div>\n</div>`
+        // } else {
+        //   icon = `<div class='icon-list' id='${nodeIDArr[i]}' tabindex="${[
+        //     i,
+        //   ]}">\n<div class='icon-wrapper' >${svgString}</div>\n<div class='content-wrapper'><div class='icon-name'>${
+        //     iconNameArr[i]
+        //   }</div>\n<div id='icon-desc${i}' class='icon-desc'>${
+        //     iconDescArr[i]
+        //   }</div>\n</div>\n</div>`
+        // }
 
-        // formatSvg = formatSvg.replace(`</g>\n</svg>`, `</svg>`)
-        // formatSvg = formatSvg.replace(strokeString,`fill="none"`);
+        console.log(typeof svgElement)
 
-        // formatSvg = formatSvg.replace(fillString, `stroke="none"`);
+        const iconWrap = document.createElement('div')
+        iconWrap.appendChild(svgElement)
+        iconWrap.classList.add('icon-wrapper')
 
-        // console.log(formatSvg)
+        const iconItem = document.createElement('div')
+        iconItem.appendChild(iconWrap)
 
-        if (nodeTypeArr[i] !== 'COMPONENT') {
-          const error = `<span class='error-info'>获取图层类型错误${nodeTypeArr[i]}</span>`
-          icon = `<div class='icon-list error-icon' id='${
-            nodeIDArr[i]
-          }' tabindex="${[
-            i,
-          ]}">\n<div class='icon-wrapper' >${svg}</div>\n<div class='content-wrapper'><div class='icon-name'>${
-            iconNameArr[i]
-          }</div>\n<div id='icon-desc${i}' class='icon-desc'>${error}</div>\n</div>\n</div>`
-        } else if (
-          nodeTypeArr[i] === 'COMPONENT' &&
-          iconDescArr[i] === '' &&
-          svg.match(viewSize) === null
+        iconItem.classList.add('icon-list')
+        iconItem.setAttribute('id', `${nodeIDArr[i]}`)
+        iconItem.setAttribute('tabindex', `${[i]}`)
+
+        const contentWrap = document.createElement('div')
+        const iconName = document.createElement('div')
+        const iconDesc = document.createElement('div')
+        iconDesc.classList.add('icon-desc')
+        iconDesc.setAttribute('id', `icon-desc${[i]}`)
+        iconDesc.textContent = `${iconDescArr[i]}`
+        iconName.classList.add('icon-name')
+
+        contentWrap.classList.add('content-wrapper')
+
+        iconName.textContent = `${iconNameArr[i]}`
+
+        contentWrap.appendChild(iconName)
+        contentWrap.appendChild(iconDesc)
+
+        iconItem.appendChild(contentWrap)
+
+        console.log(iconDescArr[i])
+        console.log()
+
+        const errorMsg = document.createElement('span')
+        errorMsg.classList.add('error-info')
+
+        if (
+          svgElement.getAttribute('viewBox') !== '0 0 16 16' &&
+          iconDescArr[i] === ''
         ) {
-          const error = `<span class='error-info'>图标尺寸不正确</span><span class='error-info'>缺失图标描述</span>`
-          icon = `<div class='icon-list error-icon' id='${
-            nodeIDArr[i]
-          }' tabindex="${[
-            i,
-          ]}">\n<div class='icon-wrapper'>${svg}</div>\n<div class='content-wrapper'><div class='icon-name'>${
-            iconNameArr[i]
-          }</div>\n<div class='icon-desc'>${error}</div>\n</div>\n</div>`
+          errorMsg.textContent += `图标尺寸不正确; `
+          errorMsg.textContent += `缺少图标描述`
         } else if (
-          nodeTypeArr[i] === 'COMPONENT' &&
-          svg.match(viewSize) === null
+          svgElement.getAttribute('viewBox') !== '0 0 16 16' &&
+          iconDescArr[i] !== ''
         ) {
-          icon = `<div class='icon-list error-icon' id='${
-            nodeIDArr[i]
-          }' tabindex="${[
-            i,
-          ]}">\n<div class='icon-wrapper'>${svg}</div>\n<div class='content-wrapper'><div class='icon-name'>${
-            iconNameArr[i]
-          }</div>\n<div class='icon-desc'><span class='error-info'>图标尺寸不正确</span>${
-            iconDescArr[i]
-          }</div>\n</div>\n</div>`
-        } else if (nodeTypeArr[i] === 'COMPONENT' && iconDescArr[i] === '') {
-          iconDescArr[i] = `<div class='error-info'>缺失图标描述</div>`
-          icon = `<div class='icon-list error-icon' id='${
-            nodeIDArr[i]
-          }' tabindex="${[
-            i,
-          ]}">\n<div class='icon-wrapper'>${svg}</div>\n<div class='content-wrapper'><div class='icon-name'>${
-            iconNameArr[i]
-          }</div>\n<div class='icon-desc'><span class='error-info'>图标尺寸不正确</span>${
-            iconDescArr[i]
-          }</div>\n</div>\n</div>`
-        } else {
-          icon = `<div class='icon-list' id='${nodeIDArr[i]}' tabindex="${[
-            i,
-          ]}">\n<div class='icon-wrapper' >${svg}</div>\n<div class='content-wrapper'><div class='icon-name'>${
-            iconNameArr[i]
-          }</div>\n<div id='icon-desc${i}' class='icon-desc'>${
-            iconDescArr[i]
-          }</div>\n</div>\n</div>`
+          errorMsg.textContent += `图标尺寸不正确`
         }
 
-        iconArr.push(icon)
+        contentWrap.appendChild(errorMsg)
+
+        iconList.appendChild(iconItem)
       }
-      console.log(svgStringArr)
-      iconList.innerHTML = iconArr.join('')
+
+      // console.log(svgStringArr)
+
+      // console.log(iconList);
+
       count.innerHTML = `<div>已选择</div>\n<div class='badge'>${nodeIDArr.length}</div>`
 
       const errorCount = Array.from(
