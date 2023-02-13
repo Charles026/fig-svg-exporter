@@ -231,7 +231,7 @@ const Result = () => {
         const iconDesc = document.createElement('div')
         iconDesc.classList.add('icon-desc')
         iconDesc.setAttribute('id', `icon-desc${[i]}`)
-        iconDesc.textContent = `${iconDescArr[i]}`
+
         iconName.classList.add('icon-name')
 
         contentWrap.classList.add('content-wrapper')
@@ -239,7 +239,11 @@ const Result = () => {
         iconName.textContent = `${iconNameArr[i]}`
 
         contentWrap.appendChild(iconName)
-        contentWrap.appendChild(iconDesc)
+
+        if (iconDescArr[i] !== '') {
+          iconDesc.textContent = `${iconDescArr[i]}`
+          contentWrap.appendChild(iconDesc)
+        }
 
         iconItem.appendChild(contentWrap)
 
@@ -249,17 +253,19 @@ const Result = () => {
         const errorMsg = document.createElement('span')
         errorMsg.classList.add('error-info')
 
-        if (
-          svgElement.getAttribute('viewBox') !== '0 0 16 16' &&
-          iconDescArr[i] === ''
-        ) {
+        const viewBoxAttr = svgElement.getAttribute('viewBox')
+
+        if (viewBoxAttr !== '0 0 16 16' && iconDescArr[i] === '') {
           errorMsg.textContent += `图标尺寸不正确; `
           errorMsg.textContent += `缺少图标描述`
         } else if (
-          svgElement.getAttribute('viewBox') !== '0 0 16 16' &&
-          iconDescArr[i] !== ''
+          viewBoxAttr !== '0 0 16 16' &&
+          iconDescArr[i] !== '' &&
+          iconDescArr[i] !== undefined
         ) {
           errorMsg.textContent += `图标尺寸不正确`
+        } else if (viewBoxAttr === '0 0 16 16' && iconDescArr[i] === '') {
+          errorMsg.textContent += `缺少图标描述`
         }
 
         contentWrap.appendChild(errorMsg)
