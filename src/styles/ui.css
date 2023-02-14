@@ -1,0 +1,152 @@
+.navbar-wrapper {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: white;
+  border-bottom: 1px solid #ebebeb;
+  height: auto;
+  width: calc(100vw);
+  padding: 8px 16px;
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 120px;
+}
+
+.load-btn {
+  display: block;
+  text-align: center;
+  margin-top: 16px;
+}
+
+.back-wrapper {
+  margin-bottom: 16px;
+}
+
+.segment {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+}
+.segment-unit {
+  font-size: 14px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 32px;
+  padding: 0px 8px;
+  /* border: 1px solid #ebebeb; */
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.segment-unit:hover {
+  background-color: #ebebeb;
+}
+
+.badge {
+  margin-left: 4px;
+  border-radius: 99px;
+  padding: 1px 5px;
+  vertical-align: middle;
+  text-align: center;
+  min-width: 8px;
+  background-color: #e5e5e5;
+}
+
+.badge-red {
+  color: white;
+  background-color: #f13a3a;
+}
+
+#list-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 110px;
+  margin-bottom: 72px;
+}
+
+.icon-list {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  padding: 4px 8px;
+  border-bottom: 0.5px solid #ebebeb;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.icon-list:hover {
+  background-color: #f0f0f0;
+}
+
+.icon-list:active {
+  background-color: #ebebeb;
+}
+
+.icon-list:focus {
+  box-shadow: inset 0 0 0 2px #1677ff;
+}
+
+.icon-wrapper {
+  display: flex;
+  width: 56px;
+  height: 56px;
+  /* border: 1px solid #ebebeb; */
+  justify-content: center;
+  align-items: center;
+}
+
+.icon-wrapper svg {
+  width: 24px;
+  height: 24px;
+}
+
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+}
+
+.icon-name {
+  font-size: 16px;
+  color: #2d343d;
+}
+
+.icon-desc {
+  color: #666666;
+  max-width: 240px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.footer-wrapper {
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  background-color: white;
+  height: 48px;
+  width: calc(100vw - 32px);
+  padding: 8px 16px;
+  border-top: 1px solid #ebebeb;
+}
+
+.hide {
+  display: none;
+}
+
+.error-info {
+  color: #f13a3a;
+  margin-right: 8px;
+}

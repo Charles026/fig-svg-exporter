@@ -6,6 +6,7 @@ import React from 'react'
 import { render } from 'react-dom'
 import App from 'pages'
 import EventEmitter from './utils/event'
+import './styles/ui.css'
 
 // 渲染
 render(<App />, document.getElementById('my-plugin'))
