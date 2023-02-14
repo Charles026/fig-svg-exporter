@@ -32,10 +32,32 @@ export const loadIcon = () => {
   ;(async () => {
     if (nodes.length > 0) {
       figma.ui.postMessage({ type: 'get-icons' })
-      const nodeIDArr = nodes.map((node) => node.id)
-      const iconNameArr = nodes.map((node) => node.name)
-      const nodeTypeArr = nodes.map((node) => node.type)
-      const iconDescArr = nodes.map((node) => node.description)
+
+      const nodeNameData = []
+      const nodeIDArr = []
+      const iconNameArr = []
+      const nodeTypeArr = []
+      const iconDescArr = []
+
+      nodes.forEach((node) => {
+        const childNodes = (node as FrameNode).children
+        const childNodeNames = []
+        childNodes.forEach((childNode) => {
+          childNodeNames.push(childNode.name)
+        })
+        nodeNameData.push({ id: node.name, childNodeNames: childNodeNames })
+
+        nodeIDArr.push(node.id)
+        iconNameArr.push(node.name)
+        nodeTypeArr.push(node.type)
+        iconDescArr.push((node as ComponentNode).description)
+      })
+
+      // const nodeIDArr = nodes.map((node) => node.id)
+      // const iconNameArr = nodes.map((node) => node.name)
+      // const nodeTypeArr = nodes.map((node) => node.type)
+      // const iconDescArr = nodes.map((node) => (node as ComponentNode).description)
+
       for (const node of nodes) {
         svgDataArr.push(await getSvgData(node))
         // if (node.type !== 'COMPONENT') {
@@ -52,6 +74,7 @@ export const loadIcon = () => {
         iconDescArr,
         nodeIDArr,
         nodeTypeArr,
+        nodeNameData,
       })
     } else {
       figma.notify('请选择图标')
