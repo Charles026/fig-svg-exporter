@@ -103,10 +103,10 @@ const Result = () => {
         // 设置group内的fill和stroke
         for (let j = 0; j < groupCount; j++) {
           const svgGroup = svgDOM.getElementById(`group-${[j]}`)
-          if (svgGroup !== null) {
-            const group = svgGroup.id
-            groupIDs.push(group)
-          }
+          // if (svgGroup !== null) {
+          //   const group = svgGroup.id
+          //   groupIDs.push(group)
+          // }
           // 获取group那第一个元素的stroke
           if (svgGroup !== null) {
             let hexCode = svgGroup.firstElementChild.getAttribute('stroke')
@@ -118,7 +118,9 @@ const Result = () => {
                 .firstElementChild.getAttribute('fill')
             }
 
-            nodeData.push({ id: nodeIDArr[i], groupIDs: groupIDs })
+            const group = `group-${[j]}`
+            groupIDs.push(group)
+
             // console.log(nodeData[i]);
 
             svgGroup.setAttribute('stroke', hexCode)
@@ -155,16 +157,16 @@ const Result = () => {
             }
           }
         }
+        // 创建节点图层名称规则
+        nodeData.push({ id: iconNameArr[i], groupIDs: groupIDs })
 
         svgString = new XMLSerializer().serializeToString(svgDOM)
 
         svgString = svgString.replace(/>\s+</g, '><').trim()
 
-        console.log(svgString)
+        // console.log(svgString)
 
         svgStringArr.push(svgString)
-
-        console.log(typeof svgElement)
 
         const iconWrap = document.createElement('div')
         iconWrap.appendChild(svgElement)
@@ -220,10 +222,10 @@ const Result = () => {
 
         console.log('输出', nodeNameData)
         if (nodeData[i] && nodeData[i].groupIDs) {
-          console.log(nodeData[i].groupIDs)
+          console.log(nodeData[i].id, nodeData[i].groupIDs)
 
           if (
-            !nodeData[i].groupIDs.every((name) =>
+            !nodeData[i].groupIDs.some((name) =>
               nodeNameData[i].childNodeNames.includes(name),
             ) ||
             nodeData[i].groupIDs.length !==
