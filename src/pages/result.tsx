@@ -24,7 +24,7 @@ const Result = () => {
   // const segment = document.getElementById('segment-control');
 
   onmessage = (event) => {
-    console.log('receive msg')
+    console.log('接收数据 receive msg')
     const msg = event?.data?.pluginMessage || {}
     const svgDataArr = msg?.svgDataArr || []
     const nodeIDArr = msg?.nodeIDArr || []
@@ -40,13 +40,15 @@ const Result = () => {
       const nodeData = []
       for (let i = 0; i < iconNameArr.length; i++) {
         const svg = new TextDecoder().decode(svgDataArr[i])
-
+        // log svg
+        console.log(svg)
         // 将svg转为DOM
         const parser = new DOMParser()
         const svgDOM = parser.parseFromString(svg, 'image/svg+xml')
-        const groupCount = svgDOM.getElementById(
-          `${iconNameArr[i]}`,
-        ).childElementCount
+        const encodedName = encodeURIComponent(iconNameArr[i])
+        const svgGroup = svgDOM.getElementById(encodedName)
+
+        const groupCount = svgGroup ? svgGroup.childElementCount : 0
 
         // 添加 desc描述
         const svgDesc = svgDOM.createElementNS(
@@ -68,8 +70,12 @@ const Result = () => {
           console.log('未找到SVG元素')
         }
 
+        console.log(nodeNameData[i].id)
+
         // 去除根 g标签
-        const gToRemove = svgElement.querySelector(`#${iconNameArr[i]}`)
+        const gToRemove = svgDOM.querySelector(`#${iconNameArr[i]}`)
+        console.log(gToRemove)
+
         if (gToRemove !== null) {
           const gChildren = gToRemove.childNodes
           for (let i = gChildren.length - 1; i >= 0; i--) {
@@ -77,6 +83,29 @@ const Result = () => {
           }
           gToRemove.parentNode.removeChild(gToRemove)
         }
+
+        // 获取所有group-i元素
+        const groupIElements = svgDOM.querySelectorAll('[id^="group-"]')
+        console.log('group-i', groupIElements)
+
+        // 遍历每个group-i元素
+        groupIElements.forEach((groupIElement) => {
+          // 获取该元素内部的所有group元素
+          const groupElements = groupIElement.querySelectorAll('g')
+
+          // 遍历每个group元素
+          groupElements.forEach((groupElement) => {
+            // 将该group元素的子元素移到其父元素下
+            while (groupElement.firstChild) {
+              groupIElement.insertBefore(groupElement.firstChild, groupElement)
+            }
+
+            // 移除该group元素
+            groupElement.remove()
+          })
+        })
+        // log svg
+        console.log(svgElement)
 
         // 去除defs
         const defs = Array.from(svgDOM.getElementsByTagName('defs'))
@@ -164,7 +193,7 @@ const Result = () => {
 
         svgString = svgString.replace(/>\s+</g, '><').trim()
 
-        // console.log(svgString)
+        console.log(svgString)
 
         svgStringArr.push(svgString)
 
@@ -220,23 +249,32 @@ const Result = () => {
           errorMsg.textContent += `缺少图标描述; `
         }
 
-        console.log('输出', nodeNameData)
-        if (nodeData[i] && nodeData[i].groupIDs) {
-          console.log(nodeData[i].id, nodeData[i].groupIDs)
+        console.log('输出名字', nodeNameData)
 
-          if (
-            !nodeData[i].groupIDs.some((name) =>
-              nodeNameData[i].childNodeNames.includes(name),
-            ) ||
-            nodeData[i].groupIDs.length !==
-              nodeNameData[i].childNodeNames.length
-          ) {
-            errorMsg.textContent += `分组图层命名错误; `
+        if (nodeData[i] && nodeData[i].groupIDs) {
+          console.log(
+            '输出group-id',
+            nodeData[i].id,
+            nodeData[i].groupIDs,
+            nodeData[i],
+          )
+          if (nodeData[i].groupIDs && nodeData[i].groupIDs.length > 0) {
+            // Access the group IDs and do something with them
+            if (
+              !nodeData[i].groupIDs.some((name) =>
+                nodeNameData[i].childNodeNames.includes(name),
+              ) ||
+              nodeData[i].groupIDs.length !==
+                nodeNameData[i].childNodeNames.length
+            ) {
+              errorMsg.textContent += `分组图层命名错误; `
+              iconItem.classList.add('error-icon')
+            }
+          } else {
+            // Handle the case where there are no group IDs
+            errorMsg.textContent += `图标命名不规范; `
             iconItem.classList.add('error-icon')
           }
-        } else {
-          errorMsg.textContent += `分组图层命名错误; `
-          iconItem.classList.add('error-icon')
         }
 
         contentWrap.appendChild(errorMsg)
@@ -308,7 +346,7 @@ const Result = () => {
     const svgArr = iconArrOut.map((res) => res.innerHTML)
     const svgNameArr = iconNameArrOut.map((res) => res.innerHTML)
     console.log(svgArr)
-    console.log(svgNameArr)
+    // console.log(svgNameArr)
 
     async function downloadFile(needDownloadList, nameList) {
       const zip = new JSZip()

@@ -18,6 +18,10 @@ export const loadIcon = () => {
 
   let svgData: Uint8Array
   const nodes = figma.currentPage.selection
+  nodes.forEach((node) => {
+    node.name = node.name.trim()
+    console.log(node.name)
+  })
 
   const svgDataArr = []
 
@@ -45,10 +49,13 @@ export const loadIcon = () => {
         childNodes.forEach((childNode) => {
           childNodeNames.push(childNode.name)
         })
-        nodeNameData.push({ id: node.name, childNodeNames: childNodeNames })
+        nodeNameData.push({
+          id: node.name.trim(),
+          childNodeNames: childNodeNames,
+        })
 
         nodeIDArr.push(node.id)
-        iconNameArr.push(node.name)
+        iconNameArr.push(node.name.trim())
         nodeTypeArr.push(node.type)
         iconDescArr.push((node as ComponentNode).description)
       })
