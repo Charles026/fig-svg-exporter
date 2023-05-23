@@ -11,6 +11,12 @@ const Home = () => {
     parent.postMessage({ pluginMessage: { type: 'storage.loadIcon' } }, '*')
   }
 
+  const loadOtherIcon = () => {
+    console.log('click to load other icon')
+    history.push('./other')
+    parent.postMessage({ pluginMessage: { type: 'page.loadOtherIcon' } }, '*')
+  }
+
   useEffect(() => {
     const brandIcon = document.getElementById('brand-icon')
 
@@ -31,7 +37,17 @@ const Home = () => {
           type="primary"
           onClick={loadIcon}
         >
-          加载图标
+          加载线型图标
+        </Button>
+      </div>
+      <div className="load-btn">
+        <Button
+          block
+          style={{ width: '160px' }}
+          type="default"
+          onClick={loadOtherIcon}
+        >
+          加载其他图标
         </Button>
       </div>
     </div>

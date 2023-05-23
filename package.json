@@ -20,7 +20,7 @@
   "devDependencies": {
     "@babel/plugin-transform-runtime": "~7.15.0",
     "@figma/plugin-typings": "^1.28.0",
-    "@types/lodash": "~4.14.172",
+    "@types/lodash": "^4.14.194",
     "@types/react": "~17.0.15",
     "@types/react-dom": "~17.0.9",
     "@types/uuid": "~8.3.1",
